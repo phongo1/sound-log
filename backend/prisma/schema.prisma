@@ -1,0 +1,68 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  lists     List[]
+  reviews   Review[]
+  createdAt DateTime  @default(now())
+}
+
+model Song {
+  id         String      @id @default(cuid())
+  title      String
+  artist     String
+  spotifyId  String?     @unique
+  inLists    ListItem[]
+  reviews    Review[]
+  createdAt  DateTime    @default(now())
+}
+
+model List {
+  id        String      @id @default(cuid())
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String
+  name      String
+  items     ListItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model ListItem {
+  list         List   @relation(fields: [listId], references: [id])
+  listId       String
+  song         Song   @relation(fields: [songId], references: [id])
+  songId       String
+  rankPosition Int
+
+  @@id([listId, songId])
+  @@unique([listId, rankPosition])
+}
+
+model Review {
+  user      User   @relation(fields: [userId], references: [id])
+  userId    String
+  song      Song   @relation(fields: [songId], references: [id])
+  songId    String
+
+  sentiment   Sentiment?
+  reviewText  String?
+
+  updatedAt   DateTime @updatedAt
+
+  // one review per user per song
+  @@id([userId, songId])
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
