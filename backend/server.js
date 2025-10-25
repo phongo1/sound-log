@@ -1,10 +1,8 @@
 const express = require('express');
-const listsRouter = require('./routes/lists');
-const songsRouter = require('./routes/songs');
+const listsRouter = require('./api/routes/lists');
+const songsRouter = require('./api/routes/songs');
 
 const app = express();
-
-app.use(express.json());
 
 // health check
 app.get('/health', (req, res) => {
@@ -12,8 +10,8 @@ app.get('/health', (req, res) => {
 });
 
 // feature routes
-app.use('/lists', listsRouter);
-app.use('/songs', songsRouter);
+app.use('/api/lists', listsRouter);
+app.use('/api/songs', songsRouter);
 
 // start server
 const PORT = process.env.PORT || 4000;
